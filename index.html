@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="todo.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fjalla+One&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="header">
+        <h1>To-Do List</h1>
+     
+    </div>
+
+    <div class="data-part">
+        <div>
+            <input id="textButton" type="text" placeholder="Add the task">
+            <input id="dateButton" type="date" placeholder="dd-mm-yyyy">
+            <button class="addButton" onclick="addToList()">Add</button>
+        </div>
+    </div>
+
+    <div id="main-part">
+    </div>
+    
+
+    <script>
+        
+        //model
+        let list=[]; 
+
+        const savedList= JSON.parse(localStorage.getItem('list'));
+        if(Array.isArray(savedList))
+        list=savedList;
+        
+
+        function saveList()
+        {
+            localStorage.setItem('list', JSON.stringify(list));
+        }
+
+        //controller
+        function addToList(){
+            const data=document.getElementById('textButton').value;
+            const date=document.getElementById('dateButton').value;
+            const id= new Date().getTime();
+            
+            list.push({
+                data:data,
+                date:date,
+                id:id
+            });   
+             saveList();
+             render();
+        }
+
+        function deleteTask(event)
+        {
+            const idToDelete= event.target.id;
+            
+            list = list.filter( function (lists){
+                if(lists.id == idToDelete)
+                {
+                return false;
+                }
+                else{ 
+                return true;
+                }
+            }
+            );
+            saveList();
+            render();
+        }
+
+        //view
+        function render()
+        {
+            const mplocation=document.getElementById('main-part');
+            mplocation.innerHTML='';
+            
+            //printing each task
+            list.forEach(function (lists) {
+            const element=document.createElement('div');
+            element.innerText=lists.data+"  "+lists.date;
+            
+            const deleteButton=document.createElement('button');
+            deleteButton.innerText='x';
+            deleteButton.type='radio'; 
+            deleteButton.className='deleteButton';
+            deleteButton.id=lists.id;
+            deleteButton.onclick= deleteTask;
+            element.appendChild(deleteButton);
+
+            element.className='content';
+            mplocation.appendChild(element);
+            });
+           
+        }
+
+        render();
+    </script>
+
+</body>
+</html>
